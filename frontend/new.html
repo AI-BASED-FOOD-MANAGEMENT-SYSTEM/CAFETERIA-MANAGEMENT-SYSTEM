@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cafeteria Meal Prediction System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:wght@600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-green: #2d6a4f;
+        --dark-green: #1b4332;
+        --light-green: #52b788;
+        --cream: #f8f6f1;
+        --warm-white: #fdfcf9;
+        --orange: #ff6b35;
+        --yellow: #ffd23f;
+        --text-dark: #1a1a1a;
+        --text-muted: #6b7280;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 4px 12px rgba(45, 106, 79, 0.08);
+        --shadow-lg: 0 20px 40px rgba(45, 106, 79, 0.12);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--cream) 0%,
+          var(--warm-white) 100%
+        );
+        color: var(--text-dark);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: -50%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(82, 183, 136, 0.1) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+        animation: float 20s ease-in-out infinite;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -30%;
+        left: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 107, 53, 0.08) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+        animation: float 25s ease-in-out infinite reverse;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        33% {
+          transform: translate(30px, -30px) rotate(5deg);
+        }
+        66% {
+          transform: translate(-20px, 20px) rotate(-5deg);
+        }
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 3rem;
+        animation: fadeInDown 0.6s ease-out;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        font-family: "Fraunces", serif;
+        font-weight: 900;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        color: var(--dark-green);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+
+      .subtitle {
+        font-size: 1.125rem;
+        color: var(--text-muted);
+        font-weight: 500;
+      }
+
+      .card {
+        background: white;
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 2rem;
+        border: 1px solid rgba(45, 106, 79, 0.06);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out backwards;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .card:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-green),
+          var(--light-green)
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .card:hover::before {
+        opacity: 1;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--cream);
+      }
+
+      .section-badge {
+        background: var(--primary-green);
+        color: white;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Fraunces", serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+
+      .section-title {
+        font-family: "Fraunces", serif;
+        font-weight: 700;
+        font-size: 1.75rem;
+        color: var(--dark-green);
+        letter-spacing: -0.01em;
+      }
+
+      .section-desc {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-top: 0.25rem;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      label {
+        font-weight: 600;
+        color: var(--dark-green);
+        font-size: 0.9rem;
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+      }
+
+      input[type="date"],
+      select,
+      input[type="number"] {
+        padding: 0.875rem 1rem;
+        border: 2px solid rgba(45, 106, 79, 0.15);
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: "DM Sans", sans-serif;
+        color: var(--text-dark);
+        background: var(--warm-white);
+        transition: all 0.3s ease;
+        outline: none;
+      }
+
+      input[type="date"]:focus,
+      select:focus,
+      input[type="number"]:focus {
+        border-color: var(--primary-green);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+      }
+
+      select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%232D6A4F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 3rem;
+      }
+
+      .btn {
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: 14px;
+        font-family: "DM Sans", sans-serif;
+        font-weight: 700;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.5s ease;
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-green),
+          var(--light-green)
+        );
+        color: white;
+        box-shadow: 0 8px 20px rgba(45, 106, 79, 0.25);
+        width: 100%;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(45, 106, 79, 0.35);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--primary-green);
+        border: 2px solid var(--primary-green);
+        width: 100%;
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary-green);
+        color: white;
+      }
+
+      .prediction-results {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: linear-gradient(
+          135deg,
+          rgba(82, 183, 136, 0.08),
+          rgba(45, 106, 79, 0.08)
+        );
+        border-radius: 16px;
+        border: 2px dashed var(--light-green);
+        display: none;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .prediction-results.show {
+        display: block;
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .result-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.3s ease;
+      }
+
+      .result-item:hover {
+        transform: translateY(-4px);
+      }
+
+      .result-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .result-value {
+        font-family: "Fraunces", serif;
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--primary-green);
+        line-height: 1;
+      }
+
+      .result-unit {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-left: 0.25rem;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 0.5rem;
+      }
+
+      .status-pending {
+        background: rgba(255, 210, 63, 0.2);
+        color: #b8860b;
+      }
+
+      .status-complete {
+        background: rgba(82, 183, 136, 0.2);
+        color: var(--dark-green);
+      }
+
+      .divider {
+        margin: 3rem 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--cream),
+          transparent
+        );
+      }
+
+      .locked-section {
+        opacity: 0.6;
+        pointer-events: none;
+        user-select: none;
+        position: relative;
+      }
+
+      .locked-section::after {
+        content: "🔒 Complete Section 1 to unlock";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--orange);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 700;
+        box-shadow: var(--shadow-lg);
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+      }
+
+      .icon {
+        display: inline-block;
+        margin-right: 0.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          padding: 1.5rem;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        .section-title {
+          font-size: 1.5rem;
+        }
+      }
+
+      .timestamp {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 2rem;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🍽️ Meal Prediction System</h1>
+        <p class="subtitle">AI-Powered Cafeteria Demand Forecasting</p>
+      </header>
+
+      <!-- SECTION 1: Pre-Meal Prediction -->
+      <div class="card" id="section1">
+        <div class="section-header">
+          <div class="section-badge">1</div>
+          <div>
+            <div class="section-title">Pre-Meal Prediction</div>
+            <div class="section-desc">
+              Generate AI predictions before meal service
+            </div>
+          </div>
+        </div>
+
+        <form id="predictionForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="date"><span class="icon">📅</span>Date</label>
+              <input type="date" id="date" required />
+            </div>
+
+            <div class="form-group">
+              <label for="dayOfWeek"
+                ><span class="icon">📆</span>Day of Week</label
+              >
+              <select id="dayOfWeek" required>
+                <option value="">Select day</option>
+                <option value="monday">Monday</option>
+                <option value="tuesday">Tuesday</option>
+                <option value="wednesday">Wednesday</option>
+                <option value="thursday">Thursday</option>
+                <option value="friday">Friday</option>
+                <option value="saturday">Saturday</option>
+                <option value="sunday">Sunday</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="mealType"
+                ><span class="icon">🍴</span>Meal Type</label
+              >
+              <select id="mealType" required>
+                <option value="">Select meal</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="foodItem"
+                ><span class="icon">🥘</span>Food Item</label
+              >
+              <select id="foodItem" required>
+                <option value="">Select food</option>
+                <optgroup label="Breakfast">
+                  <option value="golden-morn">Golden Morn</option>
+                  <option value="cornflakes">Cornflakes</option>
+                  <option value="bread">Bread</option>
+                  <option value="boiled-egg">Boiled Egg</option>
+                  <option value="akara">Akara</option>
+                  <option value="moin-moin">Moin Moin</option>
+                  <option value="pap">Pap</option>
+                  <option value="fried-yam">Fried Yam</option>
+                </optgroup>
+                <optgroup label="Lunch">
+                  <option value="white-rice-gbadun">
+                    White Rice & Gbadun Stew
+                  </option>
+                  <option value="jollof-rice">Jollof Rice</option>
+                  <option value="fried-rice">Fried Rice</option>
+                  <option value="amala-egusi">Amala & Egusi</option>
+                  <option value="eba-ogbono">Eba & Ogbono</option>
+                  <option value="porridge-beans">Porridge Beans</option>
+                  <option value="jollof-spag">Jollof Spaghetti</option>
+                </optgroup>
+                <optgroup label="Dinner">
+                  <option value="yam-egg-sauce">Yam & Egg Sauce</option>
+                  <option value="rice-beans">Rice & Beans</option>
+                  <option value="white-spag">White Spaghetti & Stew</option>
+                  <option value="macaroni">Macaroni</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <span class="icon">✨</span> Generate Prediction
+          </button>
+        </form>
+
+        <div class="prediction-results" id="predictionResults">
+          <div
+            class="section-title"
+            style="font-size: 1.5rem; margin-bottom: 1rem"
+          >
+            📊 AI Prediction Results
+          </div>
+          <div class="result-grid">
+            <div class="result-item">
+              <div class="result-label">Expected Students</div>
+              <div class="result-value" id="expectedStudents">--</div>
+              <span class="status-badge status-pending">Predicted</span>
+            </div>
+            <div class="result-item">
+              <div class="result-label">Recommended Quantity</div>
+              <div class="result-value" id="recommendedQuantity">--</div>
+              <span class="result-unit">servings</span>
+              <span class="status-badge status-pending">Suggested</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- SECTION 2: Post-Meal Actuals -->
+      <div class="card locked-section" id="section2">
+        <div class="section-header">
+          <div class="section-badge" style="background: var(--orange)">2</div>
+          <div>
+            <div class="section-title">Post-Meal Actuals</div>
+            <div class="section-desc">
+              Record actual outcomes after meal service
+            </div>
+          </div>
+        </div>
+
+        <form id="actualsForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="actualStudents"
+                ><span class="icon">👥</span>Actual Students Served</label
+              >
+              <input
+                type="number"
+                id="actualStudents"
+                placeholder="e.g., 245"
+                min="0"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="actualQuantity"
+                ><span class="icon">🥄</span>Actual Quantity Prepared</label
+              >
+              <input
+                type="number"
+                id="actualQuantity"
+                placeholder="e.g., 280"
+                min="0"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="quantityWasted"
+                ><span class="icon">♻️</span>Quantity Wasted</label
+              >
+              <input
+                type="number"
+                id="quantityWasted"
+                placeholder="e.g., 35"
+                min="0"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="quantitySold"
+                ><span class="icon">✅</span>Quantity Sold/Served</label
+              >
+              <input
+                type="number"
+                id="quantitySold"
+                placeholder="e.g., 245"
+                min="0"
+                required
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-secondary">
+            <span class="icon">💾</span> Save Actual Data
+          </button>
+        </form>
+      </div>
+
+      <div class="timestamp" id="timestamp"></div>
+    </div>
+
+    <script>
+      // Auto-set today's date
+      const dateInput = document.getElementById("date");
+      const today = new Date().toISOString().split("T")[0];
+      dateInput.value = today;
+
+      // Auto-select day of week based on date
+      dateInput.addEventListener("change", function () {
+        const selectedDate = new Date(this.value);
+        const days = [
+          "sunday",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+        ];
+        const dayOfWeek = days[selectedDate.getDay()];
+        document.getElementById("dayOfWeek").value = dayOfWeek;
+      });
+
+      // Trigger on load
+      dateInput.dispatchEvent(new Event("change"));
+
+      // Handle prediction form submission
+      document
+        .getElementById("predictionForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Simulate AI prediction (replace with actual API call)
+          const mealType = document.getElementById("mealType").value;
+          const foodItem = document.getElementById("foodItem").value;
+
+          // Mock prediction values (replace with real ML model output)
+          const mockPrediction = {
+            students: Math.floor(Math.random() * 200) + 150,
+            quantity: Math.floor(Math.random() * 150) + 200,
+          };
+
+          // Display results
+          document.getElementById("expectedStudents").textContent =
+            mockPrediction.students;
+          document.getElementById("recommendedQuantity").textContent =
+            mockPrediction.quantity;
+          document.getElementById("predictionResults").classList.add("show");
+
+          // Unlock section 2
+          const section2 = document.getElementById("section2");
+          section2.classList.remove("locked-section");
+
+          // Smooth scroll to section 2
+          setTimeout(() => {
+            section2.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 500);
+        });
+
+      // Handle actuals form submission
+      document
+        .getElementById("actualsForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Collect data
+          const actualsData = {
+            date: document.getElementById("date").value,
+            mealType: document.getElementById("mealType").value,
+            foodItem: document.getElementById("foodItem").value,
+            actualStudents: document.getElementById("actualStudents").value,
+            actualQuantity: document.getElementById("actualQuantity").value,
+            quantityWasted: document.getElementById("quantityWasted").value,
+            quantitySold: document.getElementById("quantitySold").value,
+          };
+
+          // Log to console (replace with actual API call)
+          console.log("Actuals Data:", actualsData);
+
+          // Show success message
+          alert(
+            "✅ Actual data saved successfully!\n\nThis data will be used to improve future predictions.",
+          );
+
+          // Reset forms
+          this.reset();
+          document.getElementById("predictionForm").reset();
+          document.getElementById("predictionResults").classList.remove("show");
+          document.getElementById("section2").classList.add("locked-section");
+
+          // Reset date
+          dateInput.value = today;
+          dateInput.dispatchEvent(new Event("change"));
+        });
+
+      // Update timestamp
+      function updateTimestamp() {
+        const now = new Date();
+        const timeString = now.toLocaleString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        document.getElementById("timestamp").textContent =
+          `Last updated: ${timeString}`;
+      }
+      updateTimestamp();
+      setInterval(updateTimestamp, 60000);
+    </script>
+    <script src="link.js"></script>
+  </body>
+</html>

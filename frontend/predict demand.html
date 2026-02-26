@@ -1,0 +1,1183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predict Demand Form - Babcock Cafeteria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:wght@600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #00408c;
+        --primary-light: #1a5ac5;
+        --secondary: #c5a021;
+        --secondary-light: #e8c547;
+        --bg: #ffffff;
+        --bg-light: #f8fbff;
+        --sidebar-width: 250px;
+        --text-dark: #0f172a;
+        --text-muted: #64748b;
+        --border-light: #e0e7ff;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 4px 12px rgba(0, 64, 140, 0.08);
+        --shadow-lg: 0 20px 40px rgba(0, 64, 140, 0.12);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "DM Sans",
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial;
+        background: var(--bg);
+        color: var(--text-dark);
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: -50%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(26, 90, 197, 0.06) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+        animation: float 20s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -30%;
+        left: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(197, 160, 33, 0.06) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        z-index: 0;
+        animation: float 25s ease-in-out infinite reverse;
+        pointer-events: none;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        33% {
+          transform: translate(30px, -30px) rotate(5deg);
+        }
+        66% {
+          transform: translate(-20px, 20px) rotate(-5deg);
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .app {
+        display: flex;
+        min-height: 100vh;
+        position: relative;
+        z-index: 1;
+      }
+      aside.sidebar {
+        width: var(--sidebar-width);
+        background: var(--primary);
+        color: #fff;
+        padding: clamp(16px, 4vw, 28px) clamp(12px, 3vw, 20px);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 10;
+      }
+      .brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 12px;
+      }
+      .logo {
+        width: clamp(70px, 12vw, 96px);
+        height: clamp(70px, 12vw, 96px);
+        background: #fff;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+      }
+      .logo img {
+        width: clamp(65px, 10vw, 80px);
+        height: clamp(65px, 10vw, 80px);
+        object-fit: contain;
+        border-radius: 8px;
+      }
+      .brand h2 {
+        margin: 12px 0 0;
+        font-size: clamp(9px, 1.8vw, 12px);
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-align: center;
+      }
+      nav {
+        margin-top: 18px;
+        flex: 1;
+      }
+      nav a {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        transition: all 0.3s ease;
+        font-size: clamp(12px, 1.8vw, 14px);
+      }
+      nav a:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      nav a.active {
+        background: rgba(255, 255, 255, 0.06);
+        border-right: 4px solid var(--secondary);
+        font-weight: 600;
+      }
+      nav img.icon {
+        width: clamp(18px, 4vw, 22px);
+        height: clamp(18px, 4vw, 22px);
+        filter: brightness(0) invert(1);
+        flex-shrink: 0;
+      }
+      .profile {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 16px;
+      }
+      .profile .user {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.07);
+        padding: 8px;
+        border-radius: 12px;
+        font-size: clamp(10px, 1.8vw, 12px);
+      }
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 1;
+      }
+      header {
+        height: clamp(60px, 10vw, 80px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 clamp(16px, 4vw, 36px);
+        border-bottom: 1px solid var(--border-light);
+        background: #fff;
+        animation: fadeInDown 0.6s ease-out;
+      }
+      .content {
+        padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 36px);
+        overflow: auto;
+        flex: 1;
+        max-width: 1600px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .page-header {
+        margin-bottom: clamp(20px, 3vw, 32px);
+        animation: fadeInDown 0.6s ease-out;
+      }
+      .page-header h2 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(20px, 5vw, 28px);
+        font-weight: 800;
+        color: var(--primary);
+        margin: 0;
+        letter-spacing: -0.01em;
+      }
+      .page-header p {
+        color: var(--text-muted);
+        margin: 8px 0 0;
+        font-size: clamp(0.875rem, 2vw, 1rem);
+      }
+
+      .card {
+        background: #fff;
+        border-radius: 24px;
+        padding: clamp(16px, 4vw, 32px);
+        box-shadow: var(--shadow-lg);
+        margin-bottom: clamp(16px, 3vw, 24px);
+        border: 1px solid rgba(0, 64, 140, 0.06);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out backwards;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(
+          90deg,
+          var(--primary),
+          var(--primary-light)
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .card:hover::before {
+        opacity: 1;
+      }
+
+      .card:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .card:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: clamp(12px, 2vw, 16px);
+        margin-bottom: clamp(16px, 3vw, 24px);
+        padding-bottom: clamp(12px, 2vw, 20px);
+        border-bottom: 2px solid var(--bg-light);
+      }
+
+      .section-badge {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-light)
+        );
+        color: white;
+        width: clamp(40px, 8vw, 48px);
+        height: clamp(40px, 8vw, 48px);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Fraunces", serif;
+        font-weight: 700;
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        flex-shrink: 0;
+      }
+
+      .section-title {
+        font-family: "Fraunces", serif;
+        font-weight: 700;
+        font-size: clamp(1.25rem, 4vw, 1.75rem);
+        color: var(--primary);
+        letter-spacing: -0.01em;
+        margin: 0;
+      }
+
+      .section-desc {
+        color: var(--text-muted);
+        font-size: clamp(0.875rem, 1.8vw, 0.95rem);
+        margin: 4px 0 0;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: clamp(16px, 3vw, 24px);
+        margin-bottom: clamp(16px, 3vw, 28px);
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      label {
+        font-weight: 600;
+        color: var(--primary);
+        font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+      }
+
+      input[type="date"],
+      select,
+      input[type="number"],
+      input[type="text"] {
+        padding: clamp(10px, 2vw, 12px) clamp(10px, 2vw, 14px);
+        border: 2px solid rgba(0, 64, 140, 0.15);
+        border-radius: 12px;
+        font-size: clamp(0.9rem, 1.8vw, 1rem);
+        font-family: "DM Sans", sans-serif;
+        color: var(--text-dark);
+        background: var(--bg-light);
+        transition: all 0.3s ease;
+        outline: none;
+      }
+
+      input[type="date"]:focus,
+      select:focus,
+      input[type="number"]:focus,
+      input[type="text"]:focus {
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(0, 64, 140, 0.1);
+      }
+
+      select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2300408c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 3rem;
+      }
+
+      .radio-group {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px);
+        border: 2px solid rgba(0, 64, 140, 0.15);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        font-size: clamp(0.875rem, 1.8vw, 0.95rem);
+      }
+
+      input[type="radio"] {
+        cursor: pointer;
+      }
+
+      .radio-label:has(input:checked) {
+        background: rgba(0, 64, 140, 0.1);
+        border-color: var(--primary);
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .btn {
+        padding: clamp(10px, 2vw, 14px) clamp(20px, 3vw, 32px);
+        border: none;
+        border-radius: 14px;
+        font-family: "DM Sans", sans-serif;
+        font-weight: 700;
+        font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.5s ease;
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-light)
+        );
+        color: white;
+        box-shadow: 0 8px 20px rgba(0, 64, 140, 0.25);
+        width: 100%;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(0, 64, 140, 0.35);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        width: 100%;
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      .prediction-results {
+        margin-top: clamp(16px, 3vw, 28px);
+        padding: clamp(16px, 3vw, 24px);
+        background: linear-gradient(
+          135deg,
+          rgba(26, 90, 197, 0.08),
+          rgba(0, 64, 140, 0.08)
+        );
+        border-radius: 16px;
+        border: 2px dashed var(--primary-light);
+        display: none;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      .prediction-results.show {
+        display: block;
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: clamp(12px, 2vw, 18px);
+        margin-top: clamp(12px, 2vw, 18px);
+      }
+
+      .result-item {
+        background: white;
+        padding: clamp(12px, 2.5vw, 18px);
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.3s ease;
+      }
+
+      .result-item:hover {
+        transform: translateY(-4px);
+      }
+
+      .result-label {
+        font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .result-value {
+        font-family: "Fraunces", serif;
+        font-size: clamp(1.25rem, 5vw, 2rem);
+        font-weight: 900;
+        color: var(--primary);
+        line-height: 1;
+      }
+
+      .result-unit {
+        font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-left: 4px;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 0.775rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 8px;
+        background: rgba(30, 144, 255, 0.2);
+        color: #00408c;
+      }
+
+      .divider {
+        margin: 36px 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--bg-light),
+          transparent
+        );
+      }
+
+      .locked-section {
+        opacity: 0.6;
+        pointer-events: none;
+        user-select: none;
+        position: relative;
+      }
+
+      .locked-section::after {
+        content: "🔒 Complete Section 1 to unlock";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--secondary);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 700;
+        box-shadow: var(--shadow-lg);
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+      }
+
+      .buttons-group {
+        padding-top: 16px;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+      }
+
+      .buttons-group .btn {
+        width: auto;
+        padding: 10px 24px;
+        font-size: 0.95rem;
+      }
+
+      input,
+      select,
+      button {
+        font-family: inherit;
+      }
+
+      footer {
+        padding: clamp(10px, 2vw, 12px) clamp(16px, 4vw, 28px);
+        border-top: 1px solid var(--border-light);
+        color: var(--text-muted);
+        text-align: center;
+        font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+      }
+
+      .timestamp {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+        margin-top: clamp(16px, 3vw, 28px);
+        font-style: italic;
+      }
+
+      /* Tablet and larger */
+      @media (max-width: 1024px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Tablets */
+      @media (max-width: 768px) {
+        :root {
+          --sidebar-width: 100%;
+        }
+        aside.sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 64px;
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          padding: 8px clamp(8px, 2vw, 12px);
+          align-items: center;
+          z-index: 30;
+        }
+        aside.sidebar .brand {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin: 0;
+          white-space: nowrap;
+        }
+        aside.sidebar .brand h2 {
+          font-size: clamp(9px, 1.5vw, 11px);
+          margin: 0;
+        }
+        nav {
+          display: flex;
+          gap: 6px;
+          overflow: auto;
+          align-items: center;
+          margin-top: 0;
+          flex: 1;
+          max-width: 100%;
+        }
+        nav a {
+          padding: 6px 8px;
+          font-size: clamp(11px, 1.5vw, 12px);
+          white-space: nowrap;
+        }
+        main {
+          margin-top: 64px;
+        }
+        .logo {
+          width: 36px;
+          height: 36px;
+          flex-shrink: 0;
+        }
+        .logo img {
+          width: 32px;
+          height: 32px;
+        }
+        .profile {
+          display: none;
+        }
+        header {
+          height: 60px;
+          padding: 0 clamp(12px, 3vw, 20px);
+        }
+        .content {
+          padding: clamp(16px, 3vw, 20px) clamp(12px, 3vw, 16px);
+        }
+        .card {
+          padding: clamp(14px, 3vw, 20px);
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+          gap: clamp(12px, 2vw, 16px);
+        }
+        .page-header h2 {
+          font-size: clamp(18px, 4vw, 24px);
+        }
+        .section-title {
+          font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+        }
+      }
+
+      /* Mobile phones */
+      @media (max-width: 480px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .result-grid {
+          grid-template-columns: 1fr;
+        }
+        nav a {
+          padding: 6px 8px;
+        }
+        nav img.icon {
+          display: none;
+        }
+        nav a span {
+          display: none;
+        }
+        .card {
+          padding: clamp(12px, 3vw, 16px);
+        }
+        .section-header {
+          flex-direction: column;
+          text-align: center;
+          align-items: center;
+        }
+        .buttons-group {
+          flex-direction: column;
+          justify-content: stretch;
+        }
+        .buttons-group .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body style="background: #fff; color: #0f172a">
+    <div class="app">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden>
+            <img
+              src="images/babcock-university-logo.jpg"
+              alt="Babcock University Logo"
+            />
+          </div>
+          <h2>
+            AI Food Management<br /><span style="color: var(--secondary)"
+              >Admin Console</span
+            >
+          </h2>
+        </div>
+        <nav>
+          <a href="#"
+            ><img class="icon" src="images/dashboard.svg" alt="dashboard" />
+            Dashboard</a
+          >
+          <a href="#" class="active"
+            ><img class="icon" src="images/predict.svg" alt="predict" /> Predict
+            Demand</a
+          >
+          <a href="#"
+            ><img class="icon" src="images/reports.svg" alt="reports" /> View
+            Reports</a
+          >
+          <a href="#"
+            ><img class="icon" src="images/data.svg" alt="data" /> Manage
+            Data</a
+          >
+          <a href="#"
+            ><img class="icon" src="images/profile.svg" alt="profile" />
+            Profile</a
+          >
+        </nav>
+        <div class="profile">
+          <div class="user">
+            <img
+              src="images/profile.svg"
+              alt="Admin Profile"
+              style="
+                width: 40px;
+                height: 40px;
+                border-radius: 999px;
+                border: 2px solid var(--secondary);
+                background: #fff;
+                object-fit: cover;
+              "
+            />
+            <div>
+              <div style="font-weight: 700; font-size: 12px">Administrator</div>
+              <div
+                style="
+                  font-size: 10px;
+                  color: rgba(255, 255, 255, 0.7);
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                "
+              >
+                Super Admin
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <!-- Main Content -->
+      <main>
+        <header>
+          <div>
+            <h1 style="margin: 0; color: var(--primary); font-size: 20px">
+              Predict Meal Demand
+            </h1>
+          </div>
+        </header>
+        <div class="content">
+          <div class="page-header">
+            <h2>Meal Prediction System</h2>
+            <p>AI-Powered Cafeteria Demand Forecasting</p>
+          </div>
+
+          <!-- SECTION 1: Pre-Meal Prediction -->
+          <div class="card" id="section1">
+            <div class="section-header">
+              <div class="section-badge">1</div>
+              <div>
+                <div class="section-title">Pre-Meal Prediction</div>
+                <div class="section-desc">
+                  Generate AI predictions before meal service
+                </div>
+              </div>
+            </div>
+
+            <form id="predictionForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="date">Date</label>
+                  <input type="date" id="date" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="dayOfWeek">Day of Week</label>
+                  <select id="dayOfWeek" required>
+                    <option value="">Select day</option>
+                    <option value="monday">Monday</option>
+                    <option value="tuesday">Tuesday</option>
+                    <option value="wednesday">Wednesday</option>
+                    <option value="thursday">Thursday</option>
+                    <option value="friday">Friday</option>
+                    <option value="saturday">Saturday</option>
+                    <option value="sunday">Sunday</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Meal Type</label>
+                  <div class="radio-group">
+                    <label class="radio-label">
+                      <input
+                        type="radio"
+                        name="mealType"
+                        value="breakfast"
+                        checked
+                      />
+                      Breakfast
+                    </label>
+                    <label class="radio-label">
+                      <input type="radio" name="mealType" value="lunch" />
+                      Lunch
+                    </label>
+                    <label class="radio-label">
+                      <input type="radio" name="mealType" value="dinner" />
+                      Dinner
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="foodItem">Food Item</label>
+                  <select id="foodItem" required>
+                    <option value="">Select food</option>
+                    <optgroup label="Breakfast">
+                      <option value="golden-morn">Golden Morn</option>
+                      <option value="cornflakes">Cornflakes</option>
+                      <option value="bread">Bread</option>
+                      <option value="boiled-egg">Boiled Egg</option>
+                      <option value="akara">Akara</option>
+                      <option value="moin-moin">Moin Moin</option>
+                      <option value="pap">Pap</option>
+                      <option value="fried-yam">Fried Yam</option>
+                    </optgroup>
+                    <optgroup label="Lunch">
+                      <option value="white-rice-gbadun">
+                        White Rice & Gbadun Stew
+                      </option>
+                      <option value="jollof-rice">Jollof Rice</option>
+                      <option value="fried-rice">Fried Rice</option>
+                      <option value="amala-egusi">Amala & Egusi</option>
+                      <option value="eba-ogbono">Eba & Ogbono</option>
+                      <option value="porridge-beans">Porridge Beans</option>
+                      <option value="jollof-spag">Jollof Spaghetti</option>
+                    </optgroup>
+                    <optgroup label="Dinner">
+                      <option value="yam-egg-sauce">Yam & Egg Sauce</option>
+                      <option value="rice-beans">Rice & Beans</option>
+                      <option value="white-spag">White Spaghetti & Stew</option>
+                      <option value="macaroni">Macaroni</option>
+                    </optgroup>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="expectedStudents"
+                    >Expected Number of Students</label
+                  >
+                  <input
+                    type="number"
+                    id="expectedStudents"
+                    placeholder="e.g., 1500"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary">
+                ✨ Generate Prediction
+              </button>
+            </form>
+
+            <div class="prediction-results" id="predictionResults">
+              <div
+                class="section-title"
+                style="font-size: 1.5rem; margin-bottom: 1rem; margin-top: 0"
+              >
+                📊 AI Prediction Results
+              </div>
+              <div class="result-grid">
+                <div class="result-item">
+                  <div class="result-label">Expected Students</div>
+                  <div class="result-value" id="predictedStudents">--</div>
+                  <span class="status-badge">Predicted</span>
+                </div>
+                <div class="result-item">
+                  <div class="result-label">Recommended Quantity</div>
+                  <div class="result-value" id="recommendedQuantity">--</div>
+                  <span class="result-unit">servings</span>
+                  <span class="status-badge">Suggested</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- SECTION 2: Post-Meal Actuals -->
+          <div class="card locked-section" id="section2">
+            <div class="section-header">
+              <div
+                class="section-badge"
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    var(--secondary),
+                    #d4b635
+                  );
+                "
+              >
+                2
+              </div>
+              <div>
+                <div class="section-title">Post-Meal Actuals</div>
+                <div class="section-desc">
+                  Record actual outcomes after meal service
+                </div>
+              </div>
+            </div>
+
+            <form id="actualsForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="actualStudents">Actual Students Served</label>
+                  <input
+                    type="number"
+                    id="actualStudents"
+                    placeholder="e.g., 245"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="actualQuantity">Actual Quantity Prepared</label>
+                  <input
+                    type="number"
+                    id="actualQuantity"
+                    placeholder="e.g., 280"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="quantityWasted">Quantity Wasted</label>
+                  <input
+                    type="number"
+                    id="quantityWasted"
+                    placeholder="e.g., 35"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="quantitySold">Quantity Sold/Served</label>
+                  <input
+                    type="number"
+                    id="quantitySold"
+                    placeholder="e.g., 245"
+                    min="0"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-secondary">
+                💾 Save Actual Data
+              </button>
+            </form>
+          </div>
+
+          <div class="timestamp" id="timestamp"></div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Auto-set today's date
+      const dateInput = document.getElementById("date");
+      const today = new Date().toISOString().split("T")[0];
+      dateInput.value = today;
+
+      // Auto-select day of week based on date
+      dateInput.addEventListener("change", function () {
+        const selectedDate = new Date(this.value);
+        const days = [
+          "sunday",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+        ];
+        const dayOfWeek = days[selectedDate.getDay()];
+        document.getElementById("dayOfWeek").value = dayOfWeek;
+      });
+
+      // Trigger on load
+      dateInput.dispatchEvent(new Event("change"));
+
+      // Handle prediction form submission
+      document
+        .getElementById("predictionForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Simulate AI prediction (replace with actual API call)
+          const mealType = document.querySelector(
+            'input[name="mealType"]:checked',
+          ).value;
+          const foodItem = document.getElementById("foodItem").value;
+          const expectedStudents =
+            document.getElementById("expectedStudents").value || 0;
+
+          // Mock prediction values (replace with real ML model output)
+          const baseStudents = parseInt(expectedStudents) || 200;
+          const mockPrediction = {
+            students:
+              Math.floor(baseStudents * 0.85) + Math.floor(Math.random() * 50),
+            quantity:
+              Math.floor(baseStudents * 1.15) + Math.floor(Math.random() * 80),
+          };
+
+          // Display results
+          document.getElementById("predictedStudents").textContent =
+            mockPrediction.students;
+          document.getElementById("recommendedQuantity").textContent =
+            mockPrediction.quantity;
+          document.getElementById("predictionResults").classList.add("show");
+
+          // Unlock section 2
+          const section2 = document.getElementById("section2");
+          section2.classList.remove("locked-section");
+
+          // Smooth scroll to section 2
+          setTimeout(() => {
+            section2.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 500);
+        });
+
+      // Handle actuals form submission
+      document
+        .getElementById("actualsForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Collect data
+          const actualsData = {
+            date: document.getElementById("date").value,
+            mealType: document.querySelector('input[name="mealType"]:checked')
+              .value,
+            foodItem: document.getElementById("foodItem").value,
+            actualStudents: document.getElementById("actualStudents").value,
+            actualQuantity: document.getElementById("actualQuantity").value,
+            quantityWasted: document.getElementById("quantityWasted").value,
+            quantitySold: document.getElementById("quantitySold").value,
+          };
+
+          // Log to console (replace with actual API call)
+          console.log("Actuals Data:", actualsData);
+
+          // Show success message
+          alert(
+            "✅ Actual data saved successfully!\n\nThis data will be used to improve future predictions.",
+          );
+
+          // Reset forms
+          this.reset();
+          document.getElementById("predictionForm").reset();
+          document.getElementById("predictionResults").classList.remove("show");
+          document.getElementById("section2").classList.add("locked-section");
+
+          // Reset date
+          dateInput.value = today;
+          dateInput.dispatchEvent(new Event("change"));
+        });
+
+      // Update timestamp
+      function updateTimestamp() {
+        const now = new Date();
+        const timeString = now.toLocaleString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        document.getElementById("timestamp").textContent =
+          `Last updated: ${timeString}`;
+      }
+      updateTimestamp();
+      setInterval(updateTimestamp, 60000);
+    </script>
+    <script src="link.js"></script>
+  </body>
+</html>

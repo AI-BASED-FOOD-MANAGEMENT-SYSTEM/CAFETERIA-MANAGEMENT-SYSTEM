@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Consolidated Admin Dashboard | Babcock University AI Food Management
+    </title>
+    <style>
+      :root {
+        --primary: #00408c;
+        --secondary: #c5a021;
+        --bg: #ffffff;
+        --sidebar-width: 250px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial;
+        background: var(--bg);
+        color: #0f172a;
+      }
+      
+      /* Authentication Check */
+      body.auth-check {
+        display: none;
+      }
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+      aside.sidebar {
+        width: var(--sidebar-width);
+        background: var(--primary);
+        color: #fff;
+        padding: clamp(16px, 4vw, 28px) clamp(12px, 3vw, 20px);
+        display: flex;
+        flex-direction: column;
+      }
+      .brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 12px;
+      }
+      .logo {
+        width: clamp(70px, 12vw, 96px);
+        height: clamp(70px, 12vw, 96px);
+        background: #fff;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .brand h2 {
+        margin: 12px 0 0;
+        font-size: clamp(10px, 2vw, 13px);
+        font-weight: 700;
+        letter-spacing: 0.18em;
+      }
+      nav {
+        margin-top: 18px;
+        flex: 1;
+      }
+      nav a {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        transition: all 0.3s ease;
+        font-size: clamp(12px, 1.8vw, 14px);
+      }
+      nav a:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(4px);
+      }
+      nav img.icon {
+        width: clamp(18px, 4vw, 22px);
+        height: clamp(18px, 4vw, 22px);
+        flex-shrink: 0;
+      }
+      nav a.active {
+        background: rgba(255, 255, 255, 0.06);
+        border-right: 4px solid var(--secondary);
+        font-weight: 600;
+      }
+      .profile {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 16px;
+      }
+      .profile .user {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.07);
+        padding: 8px;
+        border-radius: 12px;
+        font-size: clamp(11px, 1.8vw, 13px);
+      }
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        height: clamp(60px, 10vw, 80px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 clamp(16px, 4vw, 36px);
+        border-bottom: 1px solid #eef2f7;
+        background: #fff;
+      }
+      header h1 {
+        font-size: clamp(16px, 3vw, 20px) !important;
+      }
+      .content {
+        padding: clamp(16px, 4vw, 28px);
+        overflow: auto;
+        max-width: 1600px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .grid {
+        display: grid;
+        gap: clamp(12px, 2vw, 20px);
+      }
+      .cols-3 {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+      .card {
+        background: #fff;
+        padding: clamp(14px, 3vw, 20px);
+        border-radius: 18px;
+        border: 1px solid #eef2f7;
+        box-shadow: 0 1px 4px rgba(16, 24, 40, 0.02);
+      }
+      .kpi h3 {
+        margin: 8px 0 0;
+        font-size: clamp(24px, 5vw, 32px);
+        color: var(--primary);
+      }
+      .small {
+        font-size: clamp(9px, 1.5vw, 11px);
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(12px, 2vw, 20px);
+      }
+      .chart {
+        min-height: 180px;
+      }
+      footer {
+        padding: clamp(10px, 2vw, 12px) clamp(16px, 4vw, 28px);
+        border-top: 1px solid #eef2f7;
+        color: #7b8794;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: clamp(11px, 1.8vw, 13px);
+      }
+      .welcome-section {
+        background: linear-gradient(135deg, var(--primary) 0%, #003070 100%);
+        color: white;
+        padding: clamp(30px, 6vw, 60px) clamp(20px, 5vw, 40px);
+        border-radius: 18px;
+        margin-bottom: clamp(20px, 3vw, 30px);
+        text-align: center;
+        animation: fadeInWelcome 1s ease-out;
+      }
+      .welcome-section h2 {
+        margin: 0 0 12px 0;
+        font-size: clamp(24px, 6vw, 36px);
+        font-weight: 800;
+        line-height: 1.2;
+      }
+      .welcome-section p {
+        margin: 0;
+        font-size: clamp(14px, 3vw, 18px);
+        color: rgba(255, 255, 255, 0.9);
+      }
+      @keyframes fadeInWelcome {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .features-section {
+        background: white;
+        border: 1px solid #eef2f7;
+        border-radius: 18px;
+        padding: clamp(24px, 5vw, 40px);
+        margin-bottom: clamp(20px, 3vw, 30px);
+        animation: fadeInWelcome 1.2s ease-out;
+      }
+      .features-section h3 {
+        color: var(--primary);
+        font-size: clamp(18px, 4vw, 24px);
+        margin: 0 0 clamp(16px, 3vw, 30px) 0;
+      }
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: clamp(12px, 2vw, 20px);
+      }
+      .feature-card {
+        background: #f8fafc;
+        padding: clamp(14px, 3vw, 20px);
+        border-radius: 12px;
+        border: 1px solid #e6f2ff;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0, 64, 140, 0.1);
+        background: #f0f9ff;
+      }
+      .feature-card .icon-large {
+        font-size: clamp(24px, 4vw, 32px);
+        margin-bottom: 12px;
+      }
+      .feature-card h4 {
+        color: var(--primary);
+        margin: 0 0 8px 0;
+        font-size: clamp(13px, 2.5vw, 16px);
+      }
+      .feature-card p {
+        margin: 0;
+        color: #64748b;
+        font-size: clamp(11px, 1.8vw, 13px);
+        line-height: 1.5;
+      }
+      .pill {
+        background: #f0f9ff;
+        color: var(--primary);
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #e6f2ff;
+        font-weight: 700;
+        font-size: 11px;
+      }
+      /* Tablet and larger */
+      @media (max-width: 1024px) {
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .cols-3 {
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+      }
+      /* Tablets */
+      @media (max-width: 768px) {
+        :root {
+          --sidebar-width: 100%;
+        }
+        .cols-3 {
+          grid-template-columns: 1fr;
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        /* collapse sidebar to top bar on tablets */
+        aside.sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 64px;
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          padding: 8px clamp(8px, 2vw, 12px);
+          align-items: center;
+          z-index: 30;
+        }
+        aside.sidebar .brand {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin: 0;
+          white-space: nowrap;
+        }
+        aside.sidebar .brand h2 {
+          font-size: clamp(9px, 1.5vw, 11px);
+          margin: 0;
+        }
+        nav {
+          display: flex;
+          gap: 6px;
+          overflow: auto;
+          align-items: center;
+          margin-top: 0;
+          flex: 1;
+          max-width: 100%;
+        }
+        nav a {
+          padding: 6px 8px;
+          font-size: clamp(11px, 1.5vw, 12px);
+          white-space: nowrap;
+        }
+        main {
+          margin-top: 64px;
+        }
+        .logo {
+          width: 36px;
+          height: 36px;
+          flex-shrink: 0;
+        }
+        .profile {
+          display: none;
+        }
+        header {
+          height: 60px;
+          padding: 0 clamp(12px, 3vw, 20px);
+        }
+      }
+      /* Mobile phones */
+      @media (max-width: 480px) {
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .cols-3 {
+          grid-template-columns: 1fr;
+        }
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+        nav a {
+          padding: 6px 8px;
+        }
+        nav img.icon {
+          display: none;
+        }
+        footer {
+          flex-direction: column;
+          text-align: center;
+        }
+        footer > div:last-child {
+          order: -1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden>
+            <img
+              src="images/babcock-university-logo.jpg"
+              alt="Babcock University Logo"
+              style="
+                width: 80px;
+                height: 80px;
+                object-fit: contain;
+                border-radius: 8px;
+              "
+            />
+          </div>
+          <h2>
+            AI Food Management<br /><span style="color: var(--secondary)"
+              >Admin Console</span
+            >
+          </h2>
+        </div>
+        <nav>
+          <a href="#"
+            ><img class="icon" src="images/dashboard.svg" alt="dashboard" />
+            Dashboard</a
+          >
+          <a class="active" href="#"
+            ><img class="icon" src="images/predict.svg" alt="predict" /> Predict
+            Demand</a
+          >
+          <a href="#"
+            ><img class="icon" src="images/reports.svg" alt="reports" /> View
+            Reports</a
+          >
+          <a href="#"
+            ><img class="icon" src="images/data.svg" alt="data" /> Manage
+            Data</a
+          >
+          <a href="#"
+            ><img class="icon" src="images/profile.svg" alt="profile" />
+            Profile</a
+          >
+        </nav>
+        <div class="profile">
+          <div class="user">
+            <img
+              src="images/profile.svg"
+              alt="Admin Profile"
+              style="
+                width: 40px;
+                height: 40px;
+                border-radius: 999px;
+                border: 2px solid var(--secondary);
+                background: #fff;
+                object-fit: cover;
+              "
+            />
+            <div>
+              <div style="font-weight: 700; font-size: 12px">Administrator</div>
+              <div
+                style="
+                  font-size: 10px;
+                  color: rgba(255, 255, 255, 0.7);
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                "
+              >
+                Super Admin
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <main>
+        <header>
+          <div>
+            <h1 style="margin: 0; color: var(--primary); font-size: 20px">
+              Admin Dashboard
+            </h1>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px">
+            <button
+              style="
+                background: none;
+                border: none;
+                color: #475569;
+                font-weight: 400;
+                font-size: 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+              "
+            >
+              <img class="icon" src="images/logout.svg" alt="logout" style="width: 14px; height: 14px;" /> Sign Out
+            </button>
+          </div>
+        </header>
+        <div class="content">
+          <!-- Welcome Section -->
+          <div class="welcome-section">
+            <h2>Welcome to Your Dashboard</h2>
+            <p>AI-Powered Food Management System for Babcock University</p>
+          </div>
+
+          <!-- Features Section -->
+          <div class="features-section">
+            <h3>Functions</h3>
+            <div class="features-grid">
+              <div class="feature-card">
+                <div class="icon-large"></div>
+                <h4>Predict Demand</h4>
+                <p>Use AI to forecast meal requirements based on historical data and patterns</p>
+              </div>
+              <div class="feature-card">
+                <div class="icon-large"></div>
+                <h4>View Reports</h4>
+                <p>Access comprehensive analytics about food consumption and trends</p>
+              </div>
+              <div class="feature-card">
+                <div class="icon-large"></div>
+                <h4>Manage Data</h4>
+                <p>Organize and update meal information, quantities, and inventory</p>
+              </div>
+              <div class="feature-card">
+                <div class="icon-large"></div>
+                <h4>Profile Settings</h4>
+                <p>Manage your account preferences and security settings</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div style="margin-top: 30px; margin-bottom: 20px; border-top: 2px solid #eef2f7; padding-top: 20px;">
+            <h3 style="color: var(--primary); font-size: 18px; margin-bottom: 20px;">Today's Metrics</h3>
+          </div>
+            <div class="card kpi">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    background: #f0f9ff;
+                    padding: 10px;
+                    border-radius: 12px;
+                    color: var(--primary);
+                  "
+                >
+                  🍽️
+                </div>
+              </div>
+              <p class="small">Total Meals Predicted Today</p>
+              <h3>5,842</h3>
+              <div style="margin-top: 8px; color: #16a34a; font-weight: 700">
+                +12%
+                <span style="color: #94a3b8; font-weight: 600; margin-left: 8px"
+                  >vs last week</span
+                >
+              </div>
+            </div>
+            <div class="card">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    background: #fff7ed;
+                    padding: 10px;
+                    border-radius: 12px;
+                    color: var(--secondary);
+                  "
+                >
+                  👥
+                </div>
+              </div>
+              <p class="small">Expected Number of Students</p>
+              <h3 style="color: #0f172a">6,120</h3>
+              <div style="margin-top: 8px; color: #64748b">
+                95% Turnout rate average
+              </div>
+            </div>
+            <div class="card">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    background: #ecfdf5;
+                    padding: 10px;
+                    border-radius: 12px;
+                    color: #16a34a;
+                  "
+                >
+                  ✔️
+                </div>
+              </div>
+              <p class="small">Risk Level</p>
+              <h3 style="color: #16a34a; text-transform: uppercase">Low</h3>
+              <div style="margin-top: 8px; color: #64748b">
+                Resource levels optimized
+              </div>
+            </div>
+          </div>
+
+          <div style="height: 20px"></div>
+
+          <div class="two-col">
+            <div class="card">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 18px;
+                "
+              >
+                <div>
+                  <h4 style="margin: 0; color: var(--primary)">
+                    Past 7 Days Food Demand
+                  </h4>
+                  <div class="small">Predicted volume of meals</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <span
+                    style="
+                      width: 10px;
+                      height: 10px;
+                      background: var(--primary);
+                      border-radius: 999px;
+                      display: inline-block;
+                    "
+                  ></span>
+                  <div class="small">Meals</div>
+                </div>
+              </div>
+              <div
+                class="chart"
+                style="display: flex; align-items: end; gap: 10px"
+              >
+                <!-- simple bars -->
+                <div style="flex: 1; text-align: center">
+                  <div
+                    style="
+                      height: 60%;
+                      background: var(--primary);
+                      border-radius: 6px;
+                    "
+                  ></div>
+                  <div class="small">Mon</div>
+                </div>
+                <div style="flex: 1; text-align: center">
+                  <div
+                    style="
+                      height: 75%;
+                      background: var(--primary);
+                      border-radius: 6px;
+                    "
+                  ></div>
+                  <div class="small">Tue</div>
+                </div>
+                <div style="flex: 1; text-align: center">
+                  <div
+                    style="
+                      height: 90%;
+                      background: var(--primary);
+                      border-radius: 6px;
+                    "
+                  ></div>
+                  <div class="small">Wed</div>
+                </div>
+                <div style="flex: 1; text-align: center">
+                  <div
+                    style="
+                      height: 85%;
+                      background: var(--primary);
+                      border-radius: 6px;
+                    "
+                  ></div>
+                  <div class="small">Thu</div>
+                </div>
+                <div style="flex: 1; text-align: center">
+                  <div
+                    style="
+                      height: 70%;
+                      background: var(--primary);
+                      border-radius: 6px;
+                    "
+                  ></div>
+                  <div class="small">Fri</div>
+                </div>
+                <div style="flex: 1; text-align: center">
+                  <div
+                    style="
+                      height: 45%;
+                      background: var(--primary);
+                      border-radius: 6px;
+                    "
+                  ></div>
+                  <div class="small">Sat</div>
+                </div>
+                <div style="flex: 1; text-align: center">
+                  <div
+                    style="
+                      height: 35%;
+                      background: var(--primary);
+                      border-radius: 6px;
+                    "
+                  ></div>
+                  <div class="small">Sun</div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 18px;
+                "
+              >
+                <div>
+                  <h4 style="margin: 0; color: var(--primary)">
+                    Wastage Trend
+                  </h4>
+                  <div class="small">Weekly waste in kilograms</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <span
+                    style="
+                      width: 10px;
+                      height: 10px;
+                      background: var(--secondary);
+                      border-radius: 999px;
+                      display: inline-block;
+                    "
+                  ></span>
+                  <div class="small">Kg/Day</div>
+                </div>
+              </div>
+              <div style="height: 200px; position: relative">
+                <svg
+                  width="100%"
+                  height="100%"
+                  viewBox="0 0 400 200"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+                      <stop
+                        offset="0"
+                        stop-color="#C5A021"
+                        stop-opacity="0.15"
+                      />
+                      <stop offset="1" stop-color="#C5A021" stop-opacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M0,180 Q50,160 100,140 T200,100 T300,70 T400,40 L400,200 L0,200 Z"
+                    fill="url(#g)"
+                  />
+                  <path
+                    d="M0,180 Q50,160 100,140 T200,100 T300,70 T400,40"
+                    fill="none"
+                    stroke="#C5A021"
+                    stroke-width="3"
+                  />
+                </svg>
+                <div
+                  style="
+                    position: absolute;
+                    left: 8px;
+                    right: 8px;
+                    bottom: 8px;
+                    display: flex;
+                    justify-content: space-between;
+                    color: #94a3b8;
+                    font-weight: 700;
+                    font-size: 9px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.14em;
+                  "
+                >
+                  <span>Week 1</span><span>Week 2</span><span>Week 3</span
+                  ><span>Week 4</span>
+                </div>
+              </div>
+              <div
+                style="
+                  margin-top: 14px;
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 12px;
+                "
+              >
+                <div
+                  style="
+                    background: #f8fafc;
+                    padding: 12px;
+                    border-radius: 10px;
+                    border: 1px solid #eef2f7;
+                  "
+                >
+                  <div class="small">Monthly Reduction</div>
+                  <div
+                    style="font-weight: 700; color: #16a34a; font-size: 18px"
+                  >
+                    -24.5%
+                  </div>
+                </div>
+                <div
+                  style="
+                    background: #f8fafc;
+                    padding: 12px;
+                    border-radius: 10px;
+                    border: 1px solid #eef2f7;
+                  "
+                >
+                  <div class="small">Avg Daily Waste</div>
+                  <div
+                    style="
+                      font-weight: 700;
+                      color: var(--primary);
+                      font-size: 18px;
+                    "
+                  >
+                    12.4kg
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer>
+          <div>
+            © 2024 Babcock University AI Food Management. Professional
+            Administrative Interface.
+          </div>
+          <div style="display: flex; gap: 16px">
+            <button
+              style="
+                background: none;
+                border: none;
+                color: var(--primary);
+                font-weight: 700;
+              "
+            >
+              System Logs</button
+            ><button
+              style="
+                background: none;
+                border: none;
+                color: var(--primary);
+                font-weight: 700;
+              "
+            >
+              Technical Support
+            </button>
+          </div>
+        </footer>
+      </main>
+    </div>
+    
+    <script>
+      // Check authentication on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        if (!isAuthenticated || isAuthenticated !== 'true') {
+          // Redirect to login page if not authenticated
+          window.location.href = 'login.html';
+        }
+      });
+    </script>
+    <script src="link.js"></script>
+  </body>
+</html>

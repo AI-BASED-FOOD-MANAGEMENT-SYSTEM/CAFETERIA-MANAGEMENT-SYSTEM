@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prediction Results Details - Babcock Food AI</title>
+    <style>
+      :root {
+        --primary: #00408c;
+        --secondary: #c5a021;
+        --bg: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial;
+        background: var(--bg);
+        color: #0f172a;
+      }
+      header {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 36px;
+        border-bottom: 1px solid #e0e7ff;
+        background: #fff;
+      }
+      h2 {
+        margin: 0;
+        color: var(--primary);
+        font-size: 24px;
+      }
+      .header-subtitle {
+        color: #64748b;
+        margin-top: 4px;
+        font-size: 14px;
+      }
+      main {
+        padding: 28px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      button {
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background: #fff;
+        color: #333;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      button.primary {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #e0e7ff;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .metric-label {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .metric-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--primary);
+        margin: 8px 0;
+      }
+      .metric-trend {
+        font-size: 13px;
+        font-weight: 700;
+        color: #16a34a;
+      }
+      .summary-box {
+        background: #f0f9ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 24px;
+      }
+      .summary-box h3 {
+        margin: 0 0 8px;
+        color: var(--primary);
+      }
+      .summary-box p {
+        margin: 0;
+        color: #0369a1;
+        font-size: 14px;
+      }
+      .chart-container {
+        background: #fff;
+        border: 1px solid #e0e7ff;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+      .chart-title {
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--primary);
+        margin-bottom: 16px;
+      }
+      .chart-legend {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 16px;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+      }
+      .legend-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+      }
+      .bar-chart {
+        display: flex;
+        align-items: flex-end;
+        height: 200px;
+        gap: 8px;
+        padding: 16px;
+        background: #f8fafc;
+        border-radius: 8px;
+      }
+      .bar {
+        flex: 1;
+        background: var(--primary);
+        border-radius: 4px 4px 0 0;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+      .bar-label {
+        text-align: center;
+        font-size: 11px;
+        color: #64748b;
+        margin-top: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead {
+        background: #f8fafc;
+      }
+      th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 12px;
+        color: #64748b;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e0e7ff;
+      }
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #e0e7ff;
+        font-size: 14px;
+      }
+      .badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .badge-safe {
+        background: #ecfdf5;
+        color: #16a34a;
+        border: 1px solid #86efac;
+      }
+      .badge-risk {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fca5a5;
+      }
+      .button-group {
+        display: flex;
+        gap: 12px;
+      }
+      @media (max-width: 900px) {
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        header {
+          padding: 0 12px;
+        }
+        main {
+          padding: 12px;
+        }
+        h2 {
+          font-size: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Main Content -->
+    <main>
+      <header>
+        <div>
+          <h2>Prediction Results Details</h2>
+          <p class="header-subtitle">
+            Generated for Monday, Oct 23rd - Lunch Session
+          </p>
+        </div>
+        <div class="button-group">
+          <button class="primary">🔄 Re-calculate</button>
+        </div>
+      </header>
+
+      <!-- Metrics Grid -->
+      <div class="grid-3">
+        <div class="card">
+          <p class="metric-label">👥 Predicted Number of Students</p>
+          <div class="metric-value">2,450</div>
+          <p class="metric-trend">📈 +12%</p>
+        </div>
+        <div class="card">
+          <p class="metric-label">🍲 Recommended Food Quantity</p>
+          <div class="metric-value">1,800 kg</div>
+          <p class="metric-trend" style="color: #dc2626">📉 -5%</p>
+        </div>
+        <div class="card">
+          <p class="metric-label">🗑️ Expected Waste Level</p>
+          <div class="metric-value">4.2%</div>
+          <p class="metric-trend">📉 -2%</p>
+        </div>
+      </div>
+
+      <!-- Analysis Summary -->
+      <div class="summary-box">
+        <h3>📋 Analysis Summary</h3>
+        <p>
+          Based on historical data and trends, the system suggests these
+          quantities to minimize waste while meeting student demand. The current
+          session shows a higher-than-average turnout expectancy, but localized
+          trends suggest a shift towards plant-based options.
+        </p>
+      </div>
+
+      <!-- Demand vs Capacity Chart -->
+      <div class="chart-container">
+        <h3 class="chart-title">Demand vs. Capacity Projection</h3>
+        <p style="color: #64748b; font-size: 13px; margin: 0 0 16px">
+          Hourly distribution for Lunch Session (11:00 AM - 3:00 PM)
+        </p>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-color" style="background: var(--primary)"></div>
+            Student Demand
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #16a34a"></div>
+            Efficient Prep
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background: #dc2626"></div>
+            High Waste Risk
+          </div>
+        </div>
+        <div class="bar-chart">
+          <div style="flex: 1; display: flex; flex-direction: column">
+            <div class="bar" style="height: 60%"></div>
+            <div class="bar-label">11:00</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column">
+            <div class="bar" style="height: 75%"></div>
+            <div class="bar-label">11:30</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column">
+            <div class="bar" style="height: 90%; background: #dc2626"></div>
+            <div class="bar-label">12:00</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column">
+            <div class="bar" style="height: 95%; background: #dc2626"></div>
+            <div class="bar-label">12:30</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column">
+            <div class="bar" style="height: 80%"></div>
+            <div class="bar-label">1:00</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column">
+            <div class="bar" style="height: 65%"></div>
+            <div class="bar-label">1:30</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column">
+            <div class="bar" style="height: 45%"></div>
+            <div class="bar-label">2:00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Recommendations Table -->
+      <div
+        style="
+          background: #fff;
+          border: 1px solid #e0e7ff;
+          border-radius: 12px;
+          overflow: hidden;
+        "
+      >
+        <div style="padding: 16px; border-bottom: 1px solid #e0e7ff">
+          <h3 style="margin: 0; color: var(--primary)">
+            Suggested Menu Adjustments
+          </h3>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Item Name</th>
+              <th>Previous Qty</th>
+              <th>Predicted Qty</th>
+              <th>Risk Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Jollof Rice</td>
+              <td>450 kg</td>
+              <td style="font-weight: 700">520 kg</td>
+              <td><span class="badge badge-safe">Safe</span></td>
+            </tr>
+            <tr>
+              <td>Fried Chicken</td>
+              <td>300 kg</td>
+              <td style="font-weight: 700">310 kg</td>
+              <td><span class="badge badge-risk">High Waste</span></td>
+            </tr>
+            <tr>
+              <td>Vegetable Salad</td>
+              <td>120 kg</td>
+              <td style="font-weight: 700">185 kg</td>
+              <td><span class="badge badge-safe">Safe</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+    <script src="link.js"></script>
+  </body>
+</html>

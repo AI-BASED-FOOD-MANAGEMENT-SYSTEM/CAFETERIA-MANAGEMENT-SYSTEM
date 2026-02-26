@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Food Management - Admin Login</title>
+    <style>
+      /* Reset and Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        /* Colors - Babcock University Theme */
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --accent: #f59e0b;
+        --accent-light: #fbbf24;
+        --background: #0f172a;
+        --foreground: #f8fafc;
+        --muted: #64748b;
+        --muted-foreground: #94a3b8;
+        --destructive: #ef4444;
+
+        /* Fonts */
+        --font-sans: "Plus Jakarta Sans", sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+
+        /* Shadows */
+        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+      }
+
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--background);
+        color: var(--foreground);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* Utility Classes */
+      .hidden {
+        display: none !important;
+      }
+
+      .login-container {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background:
+          linear-gradient(
+            135deg,
+            rgba(30, 58, 138, 0.75) 0%,
+            rgba(30, 58, 138, 0.55) 50%,
+            rgba(245, 158, 11, 0.65) 100%
+          ),
+          url("images/cafe.jpg") center/cover no-repeat fixed;
+      }
+
+      .login-background {
+        display: none;
+      }
+
+      .login-overlay {
+        display: none;
+      }
+
+      .login-content {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        max-width: 28rem;
+      }
+
+      .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .logo-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 5rem;
+        height: 5rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 1rem;
+      }
+
+      .logo-img {
+        width: 3rem;
+        height: 3rem;
+        object-fit: contain;
+        border-radius: 50%;
+      }
+
+      .login-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+      }
+
+      .login-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.875rem;
+      }
+
+      .login-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: var(--shadow-2xl);
+      }
+
+      .card-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .card-title {
+        color: white;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .error-message {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: var(--destructive);
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-group label {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .form-group input {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+      }
+
+      .form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+      }
+
+      .password-input {
+        position: relative;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+
+      .password-toggle:hover {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .login-btn {
+        background: var(--accent);
+        color: var(--background);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .login-btn:hover {
+        background: var(--accent-light);
+        transform: scale(1.02);
+      }
+
+      .login-btn:active {
+        transform: scale(0.98);
+      }
+
+      .login-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .spinner {
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid currentColor;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .signup-btn,
+      .forgot-password-btn {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .signup-btn:hover,
+      .forgot-password-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+      }
+
+      .demo-credentials {
+        margin-top: 1.5rem;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .demo-title {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .demo-info {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .demo-info p {
+        margin-bottom: 0.25rem;
+      }
+
+      .login-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+      }
+
+      .login-footer p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.75rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 480px) {
+        .login-content {
+          max-width: 100%;
+          padding: 0 1rem;
+        }
+
+        .login-card {
+          padding: 1.5rem;
+        }
+
+        .login-title {
+          font-size: 1.5rem;
+        }
+
+        .button-group {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <!-- Cafe Background -->
+      <div class="login-background">
+        <div class="login-overlay"></div>
+      </div>
+
+      <!-- Login Content -->
+      <div class="login-content">
+        <!-- Logo Header -->
+        <div class="login-header">
+          <div class="logo-circle">
+            <img
+              src="images/babcock-university-logo.jpg"
+              alt="Babcock University"
+              class="logo-img"
+            />
+          </div>
+          <h1 class="login-title">AI Food Management</h1>
+          <p class="login-subtitle">Babcock University Admin Portal</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="login-card">
+          <div class="card-header">
+            <h2 class="card-title">Admin Login</h2>
+          </div>
+
+          <form id="loginForm" class="login-form">
+            <div id="errorMessage" class="error-message hidden">
+              Invalid credentials. Please use admin@babcock.edu.ng / admin123
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                placeholder="admin@babcock.edu.ng"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="password-input">
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="Enter your password"
+                  required
+                />
+                <button
+                  type="button"
+                  id="togglePassword"
+                  class="password-toggle"
+                >
+                  👁
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" id="loginBtn" class="login-btn">
+              <span class="btn-text">Sign In to Dashboard</span>
+              <div class="btn-loading hidden">
+                <div class="spinner"></div>
+                Signing In...
+              </div>
+            </button>
+
+            <!-- Sign Up and Forgot Password Buttons -->
+            <div class="button-group">
+              <button type="button" id="signupBtn" class="signup-btn">
+                 Sign Up
+              </button>
+              <button
+                type="button"
+                id="forgotPasswordBtn"
+                class="forgot-password-btn"
+              >
+                Forgot Password
+              </button>
+            </div>
+          </form>
+
+          
+
+        <!-- Footer -->
+        <div class="login-footer">
+          <p>© 2026 Babcock University. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Login Page JavaScript
+      class LoginSystem {
+        constructor() {
+          this.init();
+        }
+
+        init() {
+          this.bindEvents();
+        }
+
+        bindEvents() {
+          // Login form
+          const loginForm = document.getElementById("loginForm");
+          if (loginForm) {
+            loginForm.addEventListener("submit", this.handleLogin.bind(this));
+          }
+
+          // Password toggle
+          const togglePassword = document.getElementById("togglePassword");
+          if (togglePassword) {
+            togglePassword.addEventListener(
+              "click",
+              this.togglePasswordVisibility.bind(this),
+            );
+          }
+
+          // Sign Up button
+          const signupBtn = document.getElementById("signupBtn");
+          if (signupBtn) {
+            signupBtn.addEventListener("click", this.handleSignUp.bind(this));
+          }
+
+          // Forgot Password button
+          const forgotPasswordBtn =
+            document.getElementById("forgotPasswordBtn");
+          if (forgotPasswordBtn) {
+            forgotPasswordBtn.addEventListener(
+              "click",
+              this.handleForgotPassword.bind(this),
+            );
+          }
+        }
+
+        async handleLogin(e) {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const loginBtn = document.getElementById("loginBtn");
+          const errorMessage = document.getElementById("errorMessage");
+
+          // Show loading state
+          loginBtn.disabled = true;
+          loginBtn.querySelector(".btn-text").style.display = "none";
+          loginBtn.querySelector(".btn-loading").classList.remove("hidden");
+          errorMessage.classList.add("hidden");
+
+          try {
+            await this.login(email, password);
+            // Redirect to dashboard on successful login
+            window.location.href = "Dashboard.html";
+          } catch (error) {
+            errorMessage.textContent = error.message;
+            errorMessage.classList.remove("hidden");
+          } finally {
+            // Reset button state
+            loginBtn.disabled = false;
+            loginBtn.querySelector(".btn-text").style.display = "block";
+            loginBtn.querySelector(".btn-loading").classList.add("hidden");
+          }
+        }
+
+        login(email, password) {
+          return new Promise((resolve, reject) => {
+            // Simulate API call delay
+            setTimeout(() => {
+              if (email === "admin@babcock.edu.ng" && password === "admin123") {
+                localStorage.setItem("isAuthenticated", "true");
+                localStorage.setItem("userEmail", email);
+                localStorage.setItem("loginTime", new Date().toISOString());
+                resolve(true);
+              } else {
+                reject(
+                  new Error(
+                    "Invalid credentials. Please use admin@babcock.edu.ng / admin123",
+                  ),
+                );
+              }
+            }, 1000);
+          });
+        }
+
+        togglePasswordVisibility() {
+          const passwordInput = document.getElementById("password");
+          const toggleIcon = document.querySelector("#togglePassword");
+
+          if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleIcon.textContent = "🙈";
+          } else {
+            passwordInput.type = "password";
+            toggleIcon.textContent = "👁";
+          }
+        }
+
+        handleSignUp(e) {
+          e.preventDefault();
+          window.location.href = 'signup.html';
+        }
+
+        handleForgotPassword(e) {
+          e.preventDefault();
+          this.showNotification("Forgot Password feature coming soon!", "info");
+        }
+
+        showNotification(message, type = "info") {
+          // Create notification element
+          const notification = document.createElement("div");
+          notification.className = `notification notification-${type}`;
+          notification.textContent = message;
+
+          // Style the notification
+          Object.assign(notification.style, {
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            padding: "12px 24px",
+            borderRadius: "8px",
+            color: "white",
+            fontWeight: "600",
+            fontSize: "14px",
+            zIndex: "1000",
+            transform: "translateX(100%)",
+            transition: "transform 0.3s ease",
+          });
+
+          // Set background color based on type
+          const colors = {
+            info: "#3b82f6",
+            success: "#10b981",
+            warning: "#f59e0b",
+            error: "#ef4444",
+          };
+          notification.style.backgroundColor = colors[type] || colors.info;
+
+          // Add to DOM
+          document.body.appendChild(notification);
+
+          // Animate in
+          setTimeout(() => {
+            notification.style.transform = "translateX(0)";
+          }, 100);
+
+          // Remove after 3 seconds
+          setTimeout(() => {
+            notification.style.transform = "translateX(100%)";
+            setTimeout(() => {
+              if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+              }
+            }, 300);
+          }, 3000);
+        }
+      }
+
+      // Initialize the login system when DOM is loaded
+      document.addEventListener("DOMContentLoaded", () => {
+        window.loginSystem = new LoginSystem();
+      });
+
+      // Handle form auto-fill
+      document.addEventListener("DOMContentLoaded", () => {
+        // Auto-fill demo credentials for easier testing
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+
+        // Add click handler to demo credentials
+        const demoCredentials = document.querySelector(".demo-credentials");
+        if (demoCredentials) {
+          demoCredentials.addEventListener("click", () => {
+            emailInput.value = "admin@babcock.edu.ng";
+            passwordInput.value = "admin123";
+            emailInput.focus();
+          });
+        }
+      });
+
+      // Add some visual enhancements
+      document.addEventListener("DOMContentLoaded", () => {
+        // Add floating animation to logo
+        const logoCircle = document.querySelector(".logo-circle");
+        if (logoCircle) {
+          logoCircle.style.animation = "float 3s ease-in-out infinite";
+        }
+
+        // Add CSS for floating animation
+        const style = document.createElement("style");
+        style.textContent = `
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                }
+                
+                .login-card {
+                    animation: slideUp 0.6s ease-out;
+                }
+                
+                @keyframes slideUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                
+                .form-group input:focus {
+                    transform: scale(1.02);
+                }
+                
+                .demo-credentials {
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+                
+                .demo-credentials:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    transform: scale(1.02);
+                }
+            `;
+        document.head.appendChild(style);
+      });
+    </script>
+  </body>
+</html>

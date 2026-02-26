@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Reports with Manual Entry - Babcock University AI Food Management
+    </title>
+    <style>
+      :root {
+        --primary: #00408c;
+        --secondary: #c5a021;
+        --bg: #ffffff;
+        --sidebar-width: 250px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial;
+        background: var(--bg);
+        color: #0f172a;
+      }
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+      aside.sidebar {
+        width: var(--sidebar-width);
+        background: var(--primary);
+        color: #fff;
+        padding: clamp(16px, 4vw, 28px) clamp(12px, 3vw, 20px);
+        display: flex;
+        flex-direction: column;
+      }
+      .brand {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(8px, 2vw, 12px);
+        margin-bottom: clamp(16px, 3vw, 24px);
+        text-align: center;
+      }
+      .logo {
+        width: clamp(35px, 8vw, 40px);
+        height: clamp(35px, 8vw, 40px);
+        background: #fff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .logo img {
+        width: clamp(30px, 7vw, 35px);
+        height: clamp(30px, 7vw, 35px);
+        object-fit: contain;
+        border-radius: 6px;
+      }
+      .brand h2 {
+        margin: 0;
+        font-size: clamp(11px, 1.8vw, 13px);
+        font-weight: 700;
+        letter-spacing: 0.15em;
+      }
+      nav {
+        flex: 1;
+      }
+      nav a {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        font-size: clamp(12px, 1.8vw, 14px);
+      }
+      nav a.active {
+        background: rgba(255, 255, 255, 0.06);
+        border-right: 4px solid var(--secondary);
+        font-weight: 600;
+      }
+      nav img.icon {
+        width: clamp(18px, 4vw, 22px);
+        height: clamp(18px, 4vw, 22px);
+        filter: brightness(0) invert(1);
+        flex-shrink: 0;
+      }
+      .profile {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding-top: 16px;
+      }
+      .profile .user {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.07);
+        padding: 8px;
+        border-radius: 12px;
+        font-size: clamp(10px, 1.8vw, 12px);
+      }
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        height: clamp(60px, 10vw, 80px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 clamp(16px, 4vw, 36px);
+        border-bottom: 1px solid #e0e7ff;
+        background: #fff;
+        flex-wrap: wrap;
+        gap: clamp(12px, 2vw, 20px);
+      }
+      .content {
+        padding: clamp(16px, 4vw, 28px);
+        overflow: auto;
+        max-width: 1600px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      h2 {
+        margin: 0;
+        color: var(--primary);
+        font-size: clamp(18px, 4vw, 24px);
+        font-weight: 800;
+      }
+      .header-subtitle {
+        color: #64748b;
+        margin-top: 4px;
+        font-size: clamp(12px, 1.8vw, 14px);
+      }
+      .btn-group {
+        display: flex;
+        gap: clamp(8px, 2vw, 12px);
+        flex-wrap: wrap;
+      }
+      button {
+        padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px);
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background: #fff;
+        color: #333;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: clamp(11px, 1.5vw, 13px);
+      }
+      button.primary {
+        background: var(--primary);
+        color: #fff;
+        border: none;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead {
+        background: #f8fafc;
+      }
+      th {
+        padding: clamp(10px, 2vw, 12px);
+        text-align: left;
+        font-weight: 700;
+        font-size: clamp(10px, 1.5vw, 12px);
+        color: #64748b;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e0e7ff;
+      }
+      td {
+        padding: clamp(10px, 2vw, 12px);
+        border-bottom: 1px solid #e0e7ff;
+        font-size: clamp(12px, 1.8vw, 14px);
+      }
+      input[type="number"] {
+        border: 1px solid #e0e7ff;
+        background: #f8fafc;
+        padding: clamp(4px, 1vw, 6px) clamp(6px, 1.5vw, 8px);
+        border-radius: 6px;
+        width: clamp(70px, 15vw, 100px);
+        font-size: clamp(11px, 1.5vw, 13px);
+      }
+      .table-wrapper {
+        background: #fff;
+        border: 1px solid #e0e7ff;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: clamp(16px, 3vw, 24px);
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: clamp(12px, 2vw, 16px);
+        margin-top: clamp(16px, 3vw, 24px);
+      }
+      .stat-card {
+        background: #fff;
+        border: 1px solid #e0e7ff;
+        border-radius: 12px;
+        padding: clamp(12px, 2.5vw, 16px);
+        display: flex;
+        gap: clamp(8px, 2vw, 12px);
+      }
+      .stat-icon {
+        width: clamp(35px, 6vw, 40px);
+        height: clamp(35px, 6vw, 40px);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: clamp(16px, 3vw, 20px);
+        flex-shrink: 0;
+      }
+      .stat-label {
+        font-size: clamp(9px, 1.5vw, 11px);
+        color: #64748b;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      .stat-value {
+        font-size: clamp(16px, 3vw, 20px);
+        font-weight: 800;
+        color: var(--primary);
+      }
+      /* Tablet and larger */
+      @media (max-width: 1024px) {
+        .stats-grid {
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+      }
+
+      /* Tablets */
+      @media (max-width: 768px) {
+        :root {
+          --sidebar-width: 100%;
+        }
+        aside.sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 64px;
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          padding: 8px clamp(8px, 2vw, 12px);
+          align-items: center;
+          z-index: 30;
+        }
+        .brand {
+          margin: 0;
+          gap: 8px;
+          white-space: nowrap;
+        }
+        .brand h2 {
+          display: none;
+        }
+        nav {
+          display: flex;
+          gap: 6px;
+          overflow: auto;
+          align-items: center;
+          flex: 1;
+          max-width: 100%;
+        }
+        nav a {
+          padding: 6px 8px;
+          font-size: clamp(11px, 1.5vw, 12px);
+          white-space: nowrap;
+        }
+        main {
+          margin-top: 64px;
+        }
+        .logo {
+          width: 36px;
+          height: 36px;
+          flex-shrink: 0;
+        }
+        .logo img {
+          width: 32px;
+          height: 32px;
+        }
+        .profile {
+          display: none;
+        }
+        header {
+          height: 60px;
+          padding: 0 clamp(12px, 3vw, 20px);
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .content {
+          padding: clamp(12px, 3vw, 16px);
+        }
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        nav a span {
+          display: none;
+        }
+        table {
+          font-size: clamp(11px, 1.5vw, 12px);
+        }
+      }
+
+      /* Mobile phones */
+      @media (max-width: 480px) {
+        .btn-group {
+          width: 100%;
+        }
+        button {
+          flex: 1;
+          padding: clamp(8px, 1.5vw, 10px) clamp(8px, 1.5vw, 12px);
+        }
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        table {
+          font-size: clamp(10px, 1.3vw, 11px);
+        }
+        th,
+        td {
+          padding: clamp(8px, 1.5vw, 10px);
+        }
+        .stat-card {
+          padding: 12px;
+        }
+        header div:first-child {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden>
+            <img
+              src="images/babcock-university-logo.jpg"
+              alt="Babcock University Logo"
+            />
+          </div>
+          <h2>
+            AI Food Management<br /><span style="color: var(--secondary)"
+              >Admin</span
+            >
+          </h2>
+        </div>
+        <nav>
+          <a href="#"
+            ><img class="icon" src="images/dashboard.svg" alt="dashboard" />
+            Dashboard</a
+          >
+          <a href="#"
+            ><img class="icon" src="images/predict.svg" alt="predict" /> Predict
+            Demand</a
+          >
+          <a class="active" href="#"
+            ><img class="icon" src="images/reports.svg" alt="reports" /> View
+            Reports</a
+          >
+          <a href="#"
+            ><img class="icon" src="images/data.svg" alt="data" /> Manage
+            Data</a
+          >
+          <a href="#"
+            ><img class="icon" src="images/profile.svg" alt="profile" />
+            Profile</a
+          >
+        </nav>
+        <div class="profile">
+          <div class="user">
+            <img
+              src="images/profile.svg"
+              alt="Admin Profile"
+              style="
+                width: 40px;
+                height: 40px;
+                border-radius: 999px;
+                border: 2px solid var(--secondary);
+                background: #fff;
+                object-fit: cover;
+              "
+            />
+            <div>
+              <div style="font-weight: 700; font-size: 12px">Administrator</div>
+              <div
+                style="
+                  font-size: 10px;
+                  color: rgba(255, 255, 255, 0.7);
+                  text-transform: uppercase;
+                  letter-spacing: 0.08em;
+                "
+              >
+                Super Admin
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <!-- Main Content -->
+      <main>
+        <header>
+          <div>
+            <h2>Reports with Manual Entry</h2>
+            <p class="header-subtitle">
+              Update actual consumption data for accurate waste tracking
+            </p>
+          </div>
+          <div class="btn-group">
+            <button class="primary">🔄 Refresh</button>
+          </div>
+        </header>
+        <div class="content">
+          <!-- Data Table -->
+          <div class="table-wrapper">
+            <div
+              style="
+                padding: 16px;
+                border-bottom: 1px solid #e0e7ff;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <h3 style="margin: 0; color: var(--primary)">Consumption Logs</h3>
+            </div>
+            <div style="overflow-x: auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Day</th>
+                    <th>Meal Type</th>
+                    <th>Food Prepared</th>
+                    <th>Quantity Produced</th>
+                    <th>Expected Students</th>
+                    <th style="text-align: right">Food Wasted</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div style="font-weight: 700">Oct 24, 2023</div>
+                      <div style="font-size: 11px; color: #64748b">Tuesday</div>
+                    </td>
+                    <td>
+                      <span
+                        style="
+                          background: #dbeafe;
+                          color: #1e40af;
+                          padding: 4px 8px;
+                          border-radius: 4px;
+                          font-size: 11px;
+                          font-weight: 700;
+                        "
+                        >Breakfast</span
+                      >
+                    </td>
+                    <td>Pap & Akara</td>
+                    <td>5 coolers</td>
+                    <td>480</td>
+                    <td style="text-align: right">
+                      <span style="font-weight: 700">0.5 coolers</span> 📈
+                    </td>
+                  </tr>
+                  <tr style="background: #f8fafc">
+                    <td>
+                      <div style="font-weight: 700">Oct 24, 2023</div>
+                      <div style="font-size: 11px; color: #64748b">Tuesday</div>
+                    </td>
+                    <td>
+                      <span
+                        style="
+                          background: #fef3c7;
+                          color: #92400e;
+                          padding: 4px 8px;
+                          border-radius: 4px;
+                          font-size: 11px;
+                          font-weight: 700;
+                        "
+                        >Lunch</span
+                      >
+                    </td>
+                    <td>Jollof Rice & Stew</td>
+                    <td>8 coolers</td>
+                    <td>750</td>
+                    <td style="text-align: right; color: #16a34a">
+                      <span style="font-weight: 700">1 cooler</span> 📉
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div style="font-weight: 700">Oct 24, 2023</div>
+                      <div style="font-size: 11px; color: #64748b">Tuesday</div>
+                    </td>
+                    <td>
+                      <span
+                        style="
+                          background: #f3e8ff;
+                          color: #7e22ce;
+                          padding: 4px 8px;
+                          border-radius: 4px;
+                          font-size: 11px;
+                          font-weight: 700;
+                        "
+                        >Dinner</span
+                      >
+                    </td>
+                    <td>Rice & Beans</td>
+                    <td>6 coolers</td>
+                    <td>580</td>
+                    <td style="text-align: right; color: #dc2626">
+                      <span style="font-weight: 700">1.5 coolers</span> ⚠️
+                    </td>
+                  </tr>
+                  <tr style="background: #f8fafc">
+                    <td>
+                      <div style="font-weight: 700">Oct 23, 2023</div>
+                      <div style="font-size: 11px; color: #64748b">Monday</div>
+                    </td>
+                    <td>
+                      <span
+                        style="
+                          background: #dbeafe;
+                          color: #1e40af;
+                          padding: 4px 8px;
+                          border-radius: 4px;
+                          font-size: 11px;
+                          font-weight: 700;
+                        "
+                        >Breakfast</span
+                      >
+                    </td>
+                    <td>Cornflakes & Bread</td>
+                    <td>4 coolers</td>
+                    <td>490</td>
+                    <td style="text-align: right; color: #94a3b8">
+                      <em>Pending entry</em>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div
+              style="
+                padding: 12px 16px;
+                background: #f8fafc;
+                border-top: 1px solid #e0e7ff;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 13px;
+              "
+            >
+              <span style="color: #64748b">Showing 1 to 4 of 93 entries</span>
+              <div style="display: flex; gap: 4px">
+                <button style="padding: 6px 8px">◀</button>
+                <button
+                  class="primary"
+                  style="padding: 6px 8px; background: var(--primary)"
+                >
+                  1
+                </button>
+                <button style="padding: 6px 8px">2</button>
+                <button style="padding: 6px 8px">3</button>
+                <span style="color: #94a3b8">...</span>
+                <button style="padding: 6px 8px">▶</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statistics Cards -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="background: #f0f9ff; color: var(--primary)"
+              >
+                📝
+              </div>
+              <div>
+                <div class="stat-label">Entries Needed</div>
+                <div class="stat-value">12 Rows</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="background: #ecfdf5; color: #16a34a"
+              >
+                ✅
+              </div>
+              <div>
+                <div class="stat-label">Completed Today</div>
+                <div class="stat-value">2 / 3 Meals</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div
+                class="stat-icon"
+                style="background: #fffbeb; color: #b45309"
+              >
+                ⚠️
+              </div>
+              <div>
+                <div class="stat-label">Data Discrepancy</div>
+                <div class="stat-value">4.2%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="link.js"></script>
+  </body>
+</html>
