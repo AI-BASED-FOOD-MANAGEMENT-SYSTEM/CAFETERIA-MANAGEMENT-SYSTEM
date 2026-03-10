@@ -1104,19 +1104,27 @@
           })
             .then((res) => res.json())
             .then((data) => {
-              document.getElementById("predictedStudents").textContent =
-                data.students;
-              document.getElementById("recommendedQuantity").textContent =
-                data.quantity;
-              document.getElementById("predictionResults").classList.add("show");
+              // after the API returns we make a second call to the database-backed
+              // endpoint. this demonstrates that the UI is sourcing the final
+              // numbers from the persisted record rather than from in-memory
+              // variables.
+              fetch("/api/predictions/last")
+                .then((r) => r.json())
+                .then((rec) => {
+                  document.getElementById("predictedStudents").textContent =
+                    rec.students;
+                  document.getElementById("recommendedQuantity").textContent =
+                    rec.quantity;
+                  document.getElementById("predictionResults").classList.add("show");
 
-              // Unlock section 2
-              const section2 = document.getElementById("section2");
-              section2.classList.remove("locked-section");
+                  // Unlock section 2
+                  const section2 = document.getElementById("section2");
+                  section2.classList.remove("locked-section");
 
-              setTimeout(() => {
-                section2.scrollIntoView({ behavior: "smooth", block: "start" });
-              }, 500);
+                  setTimeout(() => {
+                    section2.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }, 500);
+                });
             })
             .catch((err) => {
               console.error("Prediction error", err);
@@ -1142,13 +1150,22 @@
             quantitySold: document.getElementById("quantitySold").value,
           };
 
-          // Log to console (replace with actual API call)
-          console.log("Actuals Data:", actualsData);
-
-          // Show success message
-          alert(
-            "✅ Actual data saved successfully!\n\nThis data will be used to improve future predictions.",
-          );
+          // post actual readings back to the server for storage
+          fetch("/api/actuals", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(actualsData),
+          })
+            .then((r) => r.json())
+            .then(() => {
+              alert(
+                "✅ Actual data saved successfully!\n\nThis data will be used to improve future predictions.",
+              );
+            })
+            .catch((err) => {
+              console.error("failed to save actuals", err);
+              alert("Could not save actual data, please try again later.");
+            });
 
           // Reset forms
           this.reset();

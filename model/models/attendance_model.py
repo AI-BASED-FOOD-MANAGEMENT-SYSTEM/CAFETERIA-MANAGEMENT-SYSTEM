@@ -5,9 +5,30 @@ import joblib
 import pandas as pd
 import os
 
+# database helper
+from model.models.db_utils import get_engine
+
+
+def load_data():
+    """Load training data from Postgres. If the table is empty or doesn't exist,
+    fall back to the Excel sheet and populate the database.
+    """
+    engine = get_engine()
+    try:
+        df = pd.read_sql("SELECT * FROM historical_data", engine)
+    except Exception:
+        df = pd.DataFrame()
+
+    if df.empty:
+        # first‑time startup, read from Excel and push to database
+        data_path = os.path.join(os.path.dirname(__file__), "../data/raw/Structured_Operational_Food_Data_v4_Cleaned.xlsx")
+        df = pd.read_excel(data_path)
+        # create table automatically with pandas
+        df.to_sql("historical_data", engine, if_exists="replace", index=False)
+    return df
+
 # Load data
-data_path = os.path.join(os.path.dirname(__file__), "../data/raw/Structured_Operational_Food_Data_v4_Cleaned.xlsx")
-data = pd.read_excel(data_path)
+data = load_data()
 
 # Target
 y = data["Expected_Students"]
